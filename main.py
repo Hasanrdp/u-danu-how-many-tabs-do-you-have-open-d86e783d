@@ -37,6 +37,19 @@ def main():
     path = os.path.join(out_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(text)
+    # Post-write gate: read the file back and confirm it holds exactly
+    # the count, non-empty, digits only, 1-5 characters, so a truncated
+    # or empty write can never pass silently.
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        written = f.read()
+    if written != text:
+        raise ValueError("written output does not match the count")
+    if not written:
+        raise ValueError("written output is empty")
+    if not written.isdigit():
+        raise ValueError("written output is not digits only")
+    if not 1 <= len(written) <= MAX_CHARS:
+        raise ValueError("written output is not 1-5 characters")
     print("Wrote %s (%d characters)" % (path, len(text)))
 
 
